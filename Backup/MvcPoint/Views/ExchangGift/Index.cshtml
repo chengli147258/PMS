@@ -1,0 +1,120 @@
+﻿@model MvcPoint.Models.ExchangGift
+@{
+    ViewBag.Title = "礼品管理";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#ExchangGiftInfo").datagrid({
+            fit: true,
+            pagination: true,
+            singleSelect: true,
+            fitcolumns: true,
+            url: '/ExchangGift/GetExchangGiftPaged',
+            method: 'post',
+            queryParams: {
+                r: Math.random()
+            },
+            columns: [[
+                { field: 'EG_ID', title: '礼品编号', width: 80,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_ID;
+                    }
+                },
+//                { field: 'S_Name', title: '店铺名称', width: 120,
+//                    formatter: function (value, row) {
+//                        return row.Shop.S_Name;
+//                    }
+//                },
+                { field: 'EG_GiftCode', title: '礼品代号', width: 80,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_GiftCode;
+                    }
+                },
+                { field: 'EG_GiftName', title: '礼品名称', width: 120,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_GiftName;
+                    }
+                },
+//                { field: 'EG_Photo', title: '礼品图片', width: 120,
+//                    formatter: function (value, row) {
+//                        return row.ExchangGift.EG_Photo;
+//                    }
+//                },
+                { field: 'EG_Point', title: '所需积分', width: 80,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_Point;
+                    }
+                },
+                { field: 'EG_Number', title: '礼品数量', width: 80,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_Number;
+                    }
+                },
+                { field: 'EG_ExchangNum', title: '已兑换数量', width: 80,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_ExchangNum;
+                    }
+                },
+                { field: 'EG_Remark', title: '备注', width: 120,
+                    formatter: function (value, row) {
+                        return row.ExchangGift.EG_Remark;
+                    }
+                }
+            ]],
+            toolbar: "#tb"
+        });
+        $(".Delete").click(function () {
+            var row = $("#ExchangGiftInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            Delete(row.ExchangGift.EG_ID);
+        });
+        $(".Insert").click(function () {
+            $("#dlg").dialog({ width: 400, height: 300 }).dialog("setTitle", "新增礼品").dialog("open");
+            $("#frm").attr("src", "/ExchangGift/Create"); //设置iframe标签的属性src的值
+        });
+        $(".Update").click(function () {
+            var row = $("#ExchangGiftInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            $("#dlg").dialog({ width: 400, height: 300 }).dialog("setTitle", "编辑礼品").dialog("open");
+            $("#frm").attr("src", "/ExchangGift/Edit/" + row.ExchangGift.EG_ID + "?r=" + Math.random()); //设置iframe标签的属性src的值
+        });
+    });
+    function Delete(id) {
+        $.messager.confirm('温馨提示', '您确定要删除选中的信息吗？', function (r) {
+            if (r) {
+                $.get("/ExchangGift/Delete", { id: id }, function (data) {
+                    if (data == "1") {
+                        $.messager.alert('温馨提示', '删除成功！', 'info');
+                        location = location;
+                    }
+                    else {
+                        $.messager.alert('温馨提示', '删除失败！', 'warning');
+                    }
+                });
+            }
+        });
+    }
+</script>
+<table id="ExchangGiftInfo">
+</table>
+<div id="tb" style="padding: 5px; height: auto">
+    <div style="margin-bottom: 5px">
+        <a href="#" class="easyui-linkbutton Insert" iconcls="icon-add">新增</a> <a href="#"
+            class="easyui-linkbutton Update" iconcls="icon-edit">修改</a> <a href="#" class="easyui-linkbutton Delete"
+                iconcls="icon-remove">删除</a>
+    </div>
+</div>
+<div id="dlg" class="easyui-dialog" data-options="modal:true,closed:true">
+    <iframe id="frm" width="99%" height="98%" frameborder="0" scrolling="no"></iframe>
+</div>

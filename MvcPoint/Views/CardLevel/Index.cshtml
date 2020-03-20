@@ -1,0 +1,92 @@
+﻿@model IEnumerable<MvcPoint.Models.CardLevel>
+@{
+    ViewBag.Title = "会员卡列表";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#cardLevelInfo").datagrid({
+            fit: true,
+            pagination: true,
+            singleSelect: true,
+            fitcolumns: true,
+            url: '/CardLevel/GetCardLevelPaged',
+            method: 'post',
+            queryParams: {
+                r: Math.random()
+            },
+            columns: [[
+                { field: 'CL_ID', title: '等级编号', width: 120 },
+                { field: 'CL_LevelName', title: '等级名称', width: 120 },
+                { field: 'CL_NeedPoint', title: '所需最大积分', width: 120 },
+                { field: 'CL_Point', title: '扣分比例', width: 120 },
+                { field: 'CL_Percent', title: '折扣比例', width: 120 }
+            ]],
+            toolbar: "#tb"
+        });
+        $(".Insert").click(function () {
+            $("#dlg").dialog({ width: 550, height: 300 }).dialog("setTitle", "新增会员卡类别").dialog("open");
+            $("#frm").attr("src", "/CardLevel/Create"); //设置iframe标签的属性src的值
+        });
+        $(".Delete").click(function () {
+            var row = $("#cardLevelInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            else {
+                Delete(row.CL_ID);
+            }
+        });
+        $(".Update").click(function () {
+            var row = $("#cardLevelInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            $("#dlg").dialog({ width: 550, height: 300 }).dialog("setTitle", "修改会员卡类别").dialog("open");
+            $("#frm").attr("src", "/CardLevel/Edit/" + row.CL_ID + "?r=" + Math.random()); //设置iframe标签的属性src的值
+        });
+        $(".Search").click(function () {
+            $("#cardLevelInfo").datagrid("load", {
+                CL_Name: $("#txtCL_Name").val()
+            });
+        });
+    });
+    function Delete(id) {
+        $.messager.confirm('温馨提示', '您确定要删除选中的信息吗？', function (r) {
+            if (r) {
+                $.get("/CardLevel/Delete", { id: id }, function (data) {
+                    if (data == "1") {
+                        $.messager.alert('温馨提示', '删除成功！', 'info');
+                        location = location;
+                    }
+                    else {
+                        $.messager.alert('温馨提示', '删除失败！', 'warning');
+                    }
+                });
+            }
+        });
+    }
+</script>
+<table id="cardLevelInfo">
+</table>
+<div id="tb" style="padding: 5px; height: auto">
+    <div style="margin-bottom: 5px">
+        <a href="#" class="easyui-linkbutton Insert" iconcls="icon-add">新增</a> <a href="#"
+            class="easyui-linkbutton Update" iconcls="icon-edit">修改</a> <a href="#" class="easyui-linkbutton Delete"
+                iconcls="icon-remove">删除</a>
+    </div>
+    <div>
+        等级名称：
+        <input id="txtCL_Name" style="width: 80px;" />
+        <a href="#" class="easyui-linkbutton Search" iconcls="icon-search">查询</a>
+    </div>
+</div>
+<div id="dlg" class="easyui-dialog" data-options="modal:true,closed:true">
+    <iframe id="frm" width="99%" height="98%" frameborder="0" scrolling="no"></iframe>
+</div>

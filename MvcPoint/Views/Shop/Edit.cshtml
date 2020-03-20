@@ -1,0 +1,65 @@
+﻿@model MvcPoint.Models.Shop
+@{
+    ViewBag.Title = "修改店铺信息";
+}
+@using(Html.BeginForm())
+{
+    <table  style="font-size: 12px;" align="center">
+        <tr>
+            <td>
+                店铺名称：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.S_Name)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                店铺类型：
+            </td>
+            <td>
+                @Html.DropDownList("S_Category", "")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                联系人：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.S_ContactName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                联系电话：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.S_ContactTel)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                店铺地址：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.S_Address)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                备注：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.S_Remark)
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input id="Submit1" type="submit" value="修改" />
+                @Html.HiddenFor(model=>model.S_ID)
+                @Html.HiddenFor(model=>model.S_CreateTime)
+            </td>
+        </tr>
+    </table>
+}

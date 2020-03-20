@@ -1,0 +1,42 @@
+﻿@model MvcPoint.Models.User
+@{
+    ViewBag.Title = "会员积分管理系统登陆界面";
+}
+@using (Html.BeginForm())
+{
+    <body style="background-image: url(Images/login.jpg)">
+        <form id="form1" runat="server">
+        <div>
+            <table style="margin: 280px 0 0 660px; font-size: 12px;" cellpadding="8">
+                <tr>
+                    <td style="font-size: 12px;">
+                        用户名：
+                    </td>
+                    <td width="80px">
+                        @Html.EditorFor(model => model.U_LoginName)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 12px;">
+                        密码：
+                    </td>
+                    <td width="80px">
+                        @Html.PasswordFor(model => model.U_Password)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center; padding-top: 10px;">
+                        <input type="submit" value="登陆" style="margin-top: -50px;" />
+                        <input type="reset" value="重置" style="margin-left: 20px; margin-top: -50px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.ValidationSummary()
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </form>
+    </body>
+}

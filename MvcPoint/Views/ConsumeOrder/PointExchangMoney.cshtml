@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "积分返现";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        ReadDateTimeShow();
+        $(".Search").click(function () {
+            if ($("#CardOrMobile").val() == "") {
+                $.messager.alert("提示", "请输入会员卡号/手机号", "warning");
+                return;
+            }
+            else {
+                $.getJSON("/MemCard/GetMemCardByM_CardIDOrM_Mobile",
+                    {
+                        CardIDOrMobile: $("#CardOrMobile").val(),
+                        r: Math.random()
+                    }, function (data) {
+                        $("#MC_Name").text(data.MemCard.MC_Name);
+                        $("#MC_ID").val(data.MemCard.MC_ID);
+                        $("#MC_CardID").val(data.MemCard.MC_CardID);
+                        $("#CL_LevelName").text(data.CardLevel.CL_LevelName + "(折扣比例：" + data.CardLevel.CL_Percent + ")");
+                        $("#MC_Point").text(data.MemCard.MC_Point);
+                        $("#MC_TotalMoney").text(data.MemCard.MC_TotalMoney);
+                    });
+            }
+        });
+        $("#Submit").click(function () {
+            if ($("#CO_GavePoint").val() == "" || $("#CardOrMobile").val() == "") {
+                $.messager.alert("提示", "请输入会员卡号/手机号或兑换积分", "warning");
+                return;
+            }
+            else {
+                var ConsumeOrder = {
+                    MC_ID: $("#MC_ID").val(),
+                    MC_CardID: $("#MC_CardID").val(),
+                    CO_GavePoint: $("#CO_GavePoint").val(),
+                    CO_Recash: $("#CO_Recash").val()
+                };
+                $("#ConsumeOrder").val(JSON.stringify(ConsumeOrder));
+            }
+        });
+    });
+    //读取动态时间的变化
+    function ReadDateTimeShow() {
+        var year = new Date().getFullYear();
+        var Month = new Date().getMonth() + 1;
+        var Day = new Date().getDate();
+        var AddDate = year + "-" + Month + "-" + Day;
+        $("#CO_CreateTime").val(AddDate);
+    }
+    //积分返现的事件
+    function PointToMoney() {
+        var ExchangPoint = $("#CO_GavePoint").val();
+        var TotalPoint = $("#MC_Point").text();
+        if ($("#CardOrMobile").val() != "") {
+            if (ExchangPoint > TotalPoint || ExchangPoint < 0) {
+                $.messager.alert("提示", "当前兑换积分超出积分余额或兑换积分格式错误", "error");
+                return;
+            }
+            else {
+                $("#LastPoint").val(TotalPoint - ExchangPoint);
+                $("#CO_Recash").val(ExchangPoint / 10);
+            }
+        }
+        else {
+            $.messager.alert("提示", "请输入兑换返现的操作会员", "error");
+            return;
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    <fieldset style="font-size: 12px;">
+        <legend>查找会员</legend>
+        <table width="500px">
+            <tr>
+                <td colspan="2">
+                    卡号/手机:
+                    <input id="CardOrMobile" name="CardOrMobile" type="text" />
+                    <a href="#" class="easyui-linkbutton Search" iconcls="icon-search">查询</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    会员姓名：<span id="MC_Name" style="color: Red;"></span>
+                    <input id="MC_ID" type="hidden" />
+                    <input id="MC_CardID" type="hidden" />
+                </td>
+                <td>
+                    当前等级：<span id="CL_LevelName" style="color: Blue;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    当前积分：<span style="color: Red;" id="MC_Point"></span>
+                </td>
+                <td>
+                    累积消费：￥<span id="MC_TotalMoney" style="color: Blue;"></span>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <fieldset style="font-size: 12px;">
+        <legend>积分返现</legend>
+        <table style="font-size: 12px;">
+            <tr>
+                <td>
+                    兑换日期：
+                </td>
+                <td>
+                    <input id="CO_CreateTime" type="text" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    兑换积分：
+                </td>
+                <td>
+                    <input id="CO_GavePoint" type="text" onkeyup="PointToMoney();" />
+                </td>
+                <td>
+                    积分返现：
+                </td>
+                <td>
+                    <input id="CO_Recash" type="text" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    剩余积分：
+                </td>
+                <td>
+                    <input id="LastPoint" type="text" readonly="readonly" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <fieldset style="font-size: 12px;">
+        <legend>说明</legend>
+        <table style="font-size: 12px;">
+            <tr>
+                <td>
+                    操作过程中，只需输入操作的会员卡号/手机查询对应会员，再输入兑换积分，系统将自动计算。
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    在“管理”->“其他设置”中了、可以设置会员积分返现的兑换比例。
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <input id="Submit" type="submit" value="马上返现" />
+    <input id="ConsumeOrder" name="ConsumeOrder" type="hidden" />
+}

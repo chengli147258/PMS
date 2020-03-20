@@ -1,0 +1,168 @@
+﻿@model MvcPoint.Models.MemCard
+@{
+    ViewBag.Title = "会员换卡";
+    MvcPoint.Models.MemCard card = (MvcPoint.Models.MemCard)Session["MemCard"];
+}
+<script src="../../Scripts/jquery-1.7.1.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnExchangeCard").click(function () {
+            var OldPwd = $("#txtPwd").val();
+            var NewPwd = $("#txtNewPwd").val();
+            var NewPwdQuit = $("#txtNewPwdQuit").val();
+            var CardNo = $("#txtCardNo").val();
+            var type;
+            if ($("#cbkIsSamePwd").attr("checked")) {
+                type = 1;
+            }
+            else {
+                type = 0;
+            }
+            if (type == 1) { //表示当前新卡密码与原卡一致
+                if (OldPwd == "" || CardNo == "") {
+                    alert("请输入必要的信息")
+                    return;
+                }
+                else {
+                    Exchange(type, OldPwd, NewPwd, NewPwdQuit, CardNo);
+                }
+            }
+            else {
+                if (OldPwd == "" || CardNo == "" || NewPwd == "" || NewPwdQuit == "") {
+                    alert("请输入必要的信息");
+                    return;
+                }
+                else {
+                    if (NewPwd == NewPwdQuit) {
+                        Exchange(type, OldPwd, NewPwd, NewPwdQuit, CardNo);
+                    }
+                    else {
+                        alert("两次密码输入不一致，请重新输入");
+                    }
+                }
+            }
+        });
+    });
+    function Exchange(type, oldpwd, newpwd, newpwdquit, cardno) {
+        $.get("/MemCard/TrueExchangeCard", {
+            type: type,
+            pwd: oldpwd,
+            cardno: cardno,
+            newpwd: newpwd
+        }, function (data) {
+            if (data == "1") {
+                alert("换卡成功！");
+                window.parent.$("#dlg").dialog("close");
+                window.parent.$('#memCardInfo').datagrid('reload');
+            }
+            else if (data == "2") {
+                alert("旧密码输入有误！");
+                Clean();
+            }
+            else {
+                alert("换卡失败！");
+                Clean();
+            }
+        });
+    }
+    //清空文本框
+    function Clean() {
+        $("#txtPwd").val("");
+        $("#txtNewPwd").val("");
+        $("#txtNewPwdQuit").val("");
+        $("#txtCardNo").val("");
+    }
+</script>
+<fieldset style="font-size: 12px;">
+    <legend>会员卡基本信息</legend>
+    <table>
+        <tr>
+            <td>
+                会员姓名：
+            </td>
+            <td>
+                <input type="text" value="@card.MC_Name" readonly="readonly" style="border:0px;"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                会员等级：
+            </td>
+            <td>
+                @if (card.CL_ID == 1)
+                {
+                    <input type="text" value="普通会员" readonly="readonly" style="border: 0px;" />
+                }
+                else if (card.CL_ID == 2)
+                {
+                    <input type="text" value="银卡会员" readonly="readonly" style="border: 0px;" />
+                }
+                else if (card.CL_ID == 3)
+                {
+                    <input type="text" value="金卡会员" readonly="readonly" style="border: 0px;" />
+                }
+                else if (card.CL_ID == 4)
+                {
+                    <input type="text" value="至尊VIP" readonly="readonly" style="border: 0px;" />
+                }
+                else
+                {
+                    <input type="text" value="等待系统升级……" readonly="readonly" style="border: 0px;" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                登记日期：
+            </td>
+            <td>
+                <input type="text" value="@card.MC_CreateTime" readonly="readonly" style="border:0px;"/>
+            </td>
+        </tr>
+    </table>
+</fieldset>
+<fieldset style="font-size: 12px;">
+    <legend>换卡信息</legend>
+    <table>
+        <tr>
+            <td>
+                请输入此卡密码：
+            </td>
+            <td>
+                <input id="txtPwd" type="password" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                新会员卡号：
+            </td>
+            <td>
+                <input id="txtCardNo" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                新会员卡密码：
+            </td>
+            <td>
+                <input id="txtNewPwd" type="password" />
+                @*<input id="cbkIsSamePwd" type="checkbox" />密码与旧卡密码一致*@
+            </td>
+        </tr>
+        <tr>
+            <td>
+                确认密码：
+            </td>
+            <td>
+                <input id="txtNewPwdQuit" type="password" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input id="btnExchangeCard" type="button" value="换卡" />
+            </td>
+        </tr>
+    </table>
+</fieldset>

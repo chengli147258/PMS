@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "兑换记录查询";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/ToolKit.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#dg-container").height($(document).height() - $("#fd-search").outerHeight() - 40);
+        $("#btnSelect").click(function () {
+            if ($("#CardIDorMoblie").val() == "") {
+                $.messager.alert("提示", "请输入会员卡号/手机号", "warning");
+            }
+            else {
+                $("#ExchangeLogInfo").datagrid({
+                    fit: true,
+                    pagination: true,
+                    rownumbers: true,
+                    singleSelect: true,
+                    fitcolumns: true,
+                    url: '/ExchangLog/SelectExchangeLogByMemCardIDOrMobileTrue',
+                    method: 'post',
+                    queryParams: {
+                        MC_CardID: $("#CardIDorMoblie").val(),
+                        MC_Mobile: $("#CardIDorMoblie").val(),
+                        r: Math.random()
+                    },
+                    columns: [[
+                        { field: 'EG_GiftName', title: '礼品名称', width: 120,
+                            formatter: function (value, row) {
+                                return row.EG_GiftName;
+                            }
+                        },
+                        { field: 'EL_Point', title: '所需积分', width: 80,
+                            formatter: function (value, row) {
+                                return row.EL_Point;
+                            }
+                        },
+                        { field: 'EL_Number', title: '兑换数量', width: 120,
+                            formatter: function (value, row) {
+                                return row.EL_Number;
+                            }
+                        },
+                        { field: 'EL_CreateTime', title: '兑换时间',
+                            formatter: function (value, row) {
+                                return FormatJsonTime(row.EL_CreateTime);
+                            }
+                        }
+                    ]]
+                });
+            }
+        });
+    });
+</script>
+<fieldset id="fd-search">
+    <legend>查找会员</legend>
+    <table style="font-size: 12px;">
+        <tr>
+            <td>
+                会员卡号/电话：
+            </td>
+            <td>
+                <input id="CardIDorMoblie" type="text" />
+            </td>
+            <td>
+                <input id="btnSelect" type="button" value="全部兑换记录" />
+            </td>
+        </tr>
+    </table>
+</fieldset>
+<fieldset id="dg-container">
+    <legend>兑换记录列表</legend>
+    <table id="ExchangeLogInfo" style="font: 12px;">
+    </table>
+</fieldset>

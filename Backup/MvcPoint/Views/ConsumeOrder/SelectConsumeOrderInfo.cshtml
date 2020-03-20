@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "SelectConsumeOrderInfo";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/ToolKit.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#dg-container").height($(document).height() - $("#fd-search").outerHeight() - 40);
+        $("#btnSelect").click(function () {
+            if ($("#CardIDorMoblie").val() == "") {
+                $.messager.alert("提示", "请输入会员卡号/手机号", "warning");
+            }
+            else {
+                $("#ConsumeOrderInfo").datagrid({
+                    fit: true,
+                    pagination: true,
+                    singleSelect: true,
+                    fitcolumns: true,
+                    url: '/ConsumeOrder/SelectConsumeOrderInfoTure',
+                    method: 'post',
+                    queryParams: {
+                        MC_CardID: $("#CardIDorMoblie").val(),
+                        MC_Mobile: $("#CardIDorMoblie").val(),
+                        BeginDate:"",
+                        EndDate:"",
+                        CO_OrderType:0,
+                        r: Math.random()
+                    },
+                    columns: [[
+                        { field: 'CO_OrderCode', title: '订单号', width: 110,
+                            formatter: function (value, row) {
+                                return row.ConsumOrder.CO_OrderCode;
+                            }
+                        },
+                        { field: 'MC_CardID', title: '会员卡号', width: 60,
+                            formatter: function (value, row) {
+                                return row.MemCard.MC_CardID;
+                            }
+                        },
+                        { field: 'MC_Name', title: '会员姓名', width: 60,
+                            formatter: function (value, row) {
+                                return row.MemCard.MC_Name;
+                            }
+                        },
+                        { field: 'CO_TotalMoney', title: '额度', width: 80,
+                            formatter: function (value, row) {
+                                return '￥'+row.ConsumOrder.CO_TotalMoney;
+                            }
+                        },
+                        { field: 'CO_DiscountMoney', title: '实际支付', width: 80,
+                            formatter: function (value, row) {
+                                return '￥' + row.ConsumOrder.CO_DiscountMoney;
+                            }
+                        },
+                        { field: 'CO_GavePoint', title: '积分', width: 80,
+                            formatter: function (value, row) {
+                                return row.ConsumOrder.CO_GavePoint;
+                            }
+                        },
+                        { field: 'CO_Recash', title: '返现金', width: 80,
+                            formatter: function (value, row) {
+                                return '￥' + row.ConsumOrder.CO_Recash;
+                            }
+                        },
+                        { field: 'CI_Name', title: '类型', width: 80,
+                            formatter: function (value, row) {
+                                return row.CategoryItem.CI_Name;
+                            }
+                        },
+                        { field: 'CO_CreateTime', title: '时间',
+                            formatter: function (value, row) {
+                                return FormatJsonTime(row.ConsumOrder.CO_CreateTime);
+                            }
+                        }
+                    ]]
+                });
+            }
+        });
+    });
+</script>
+<fieldset id="fd-search" style="font-size: 12px;">
+    <legend>查找会员</legend>
+    <table style="font-size: 12px;">
+        <tr>
+            <td>
+                会员卡号/电话：
+            </td>
+            <td>
+                <input id="CardIDorMoblie" type="text" />
+            </td>
+            <td>
+                <input id="btnSelect" type="button" value="全部消费记录" />
+            </td>
+        </tr>
+    </table>
+</fieldset>
+<fieldset id="dg-container" style="font-size: 12px;">
+    <legend>消费记录列表</legend>
+        <table id="ConsumeOrderInfo" style="font: 12px;">
+        </table>
+</fieldset>

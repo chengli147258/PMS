@@ -1,0 +1,125 @@
+﻿@model MvcPoint.Models.TransferLog
+@{
+    ViewBag.Title = "新增转账";
+    MvcPoint.Models.MemCard card = (MvcPoint.Models.MemCard)Session["MemCard"];
+}
+<script src="../../Scripts/jquery-1.7.1.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnGetMemCardByCard").click(function () {
+            $.get("/TransferLog/GetNamebyId", { MC_CardID: $("#txtCard").val() }, function (data) {
+                if (data == "0") {
+                    $("#txtMessage").val("未检索到任何信息……");
+                    $("#TL_ToMC_CardID").val("");
+                    $("#txtToName").val("");
+                    $("#TL_ToMC_ID").val("");
+                    $("#txtPoint").val("");
+                    $("#txtTotalMoney").val("");
+                    return;
+                }
+                else {
+                    $("#txtMessage").val("");
+                    $("#TL_ToMC_CardID").val(data.MC_CardID);
+                    $("#txtToName").val(data.MC_Name);
+                    $("#TL_ToMC_ID").val(data.MC_ID);
+                    $("#txtPoint").val(data.MC_Point);
+                    $("#txtTotalMoney").val(data.MC_TotalMoney);
+                }
+            });
+        });
+    });
+    function Clean() {
+        $("#TL_TransferMoney").attr("value", "");
+    }
+</script>
+@using (Html.BeginForm())
+{ 
+    <fieldset style="font-size: 12px;">
+        <legend>转出会员</legend>
+        <table align="center">
+            <tr>
+                <td>
+                    卡号：<input id="TL_FromMC_CardID" name="TL_FromMC_CardID" type="text" style="border:0px;" readonly="readonly" value="@card.MC_CardID" />
+                </td>
+                <td>
+                    姓名：<input id="txtName" type="text" style="border:0px;" readonly="readonly" value="@card.MC_Name" />
+                    <input id="TL_FromMC_ID" name="TL_FromMC_ID" type="hidden" value="@card.MC_ID" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    账户积分：<input id="Point" name="txtPoint" type="text" style="border:0px;" readonly="readonly" value="@card.MC_Point" />
+                </td>
+                <td>
+                    累计消费：￥<input id="TotalMoney" type="text" style="border:0px;" readonly="readonly" value="@card.MC_TotalMoney" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <table style="font-size: 12px;">
+        <tr>
+            <td colspan=3>
+            点击查找获取当前输入会员信息
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="txtCard" type="text" />
+            </td>
+            <td>
+                <input id="btnGetMemCardByCard" type="button" value="查找" />
+            </td>
+            <td>
+                <input id="txtMessage" type="text" style="border: 0px; color: Red;" readonly="readonly" />
+            </td>
+        </tr>
+    </table>
+    <fieldset style="font-size: 12px;">
+        <legend>转入会员</legend>
+        <table align="center">
+            <tr>
+                <td>
+                    卡号：<input id="TL_ToMC_CardID" name="TL_ToMC_CardID" type="text" style="border: 0px;"
+                        readonly="readonly" />
+                </td>
+                <td>
+                    姓名：<input id="txtToName" type="text" style="border: 0px;" readonly="readonly" />
+                    <input id="TL_ToMC_ID" name="TL_ToMC_ID" type="hidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    账户积分：<input id="txtPoint" name="txtPoint" type="text" style="border: 0px;" readonly="readonly" />
+                </td>
+                <td>
+                    累计消费：￥<input id="txtTotalMoney" type="text" style="border: 0px;" readonly="readonly" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <table>
+        <tr>
+            <td>
+                转账金额：
+            </td>
+            <td>
+                <input id="TL_TransferMoney" name="TL_TransferMoney" type="text" value="￥0.00" onfocus="Clean();" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                操作备注：
+            </td>
+            <td>
+                <input id="TL_Remark" name="TL_Remark" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input id="Submit" type="submit" value="转账" />
+            </td>
+        </tr>
+    </table>
+}

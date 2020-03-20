@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "快速消费统计";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/ToolKit.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#dg-container").height($(document).height() - $("#fd-search").outerHeight()-25);
+        $("#FastConsumeStatisticInfo").datagrid({
+            fit: true,
+            pagination: true,
+            rownumbers: true,
+            singleSelect: true,
+            fitcolumns: true,
+            url: '/ConsumeOrder/SelectFastConsumeStatistic',
+            method: 'post',
+            queryParams: {
+                r: Math.random()
+            },
+            columns: [[
+                { field: 'CO_OrderCode', title: '订单编号', width: 150,
+                    formatter: function (value, row) {
+                        return row.ConsumeOrder.CO_OrderCode;
+                    }
+                },
+                { field: 'MC_CardID', title: '会员卡号', width: 150,
+                    formatter: function (value, row) {
+                        return row.ConsumeOrder.MC_CardID;
+                    }
+                },
+                { field: 'MC_Name', title: '会员姓名', width: 150,
+                    formatter: function (value, row) {
+                        return row.MemCard.MC_Name;
+                    }
+                },
+                { field: 'CO_DiscountMoney', title: '消费金额', width: 150,
+                    formatter: function (value, row) {
+                        return row.ConsumeOrder.CO_DiscountMoney;
+
+                    }
+                },
+                { field: 'CO_GavePoint', title: '获得积分', width: 150,
+                    formatter: function (value, row, index) {
+                        return row.ConsumeOrder.CO_GavePoint;
+                    }
+                },
+                { field: 'CO_CreateTime', title: '消费时间', width: 150,
+                    formatter: function (value, row) {
+                        return FormatJsonTime(row.ConsumeOrder.CO_CreateTime);
+                    }
+                },
+                { field: 'PayType', title: '支付方式', width: 150,
+                    formatter: function (value, row) {
+                        return '现金支付';
+                    }
+                }
+            ]]
+        });
+        $("#SelectConsumeInfo").click(function () {
+            var OperationValue = $("#ddlOperation").val();
+            var OperationString;
+            if (OperationValue == "0") {
+                OperationString = ">=";
+            }
+            else if (OperationValue == "1") {
+                OperationString = "<=";
+            }
+            else if (OperationValue == "2") {
+                OperationString = ">";
+            }
+            else if (OperationValue == "3") {
+                OperationString = "<";
+            }
+            else {
+                OperationString = "=";
+            }
+            var BeginDate = "";
+            var EndDate = "";
+            if ($("#BeginDate").datebox("getValue") != "" && $("#EndDate").datebox("getValue") != "") {
+                BeginDate = $("#BeginDate").datebox("getValue") + " " + $("#BeginTime").val();
+                EndDate = $("#EndDate").datebox("getValue") + " " + $("#EndTime").val();
+            }
+            else {
+                BeginDate = "";
+                EndDate = "";
+            }
+            var CardID = $("#MemCardIDorMobile").val();
+            var CO_DiscountMoney = $("#Money").val();
+            var CO_OrderCode = $("#CO_OrderCode").val();
+            var CL_ID = $("#CL_ID").val().toString();
+            $("#FastConsumeStatisticInfo").datagrid("load", {
+                BeginDate: BeginDate,
+                EndDate: EndDate,
+                CardID: CardID,
+                CL_ID: CL_ID,
+                Operation: OperationString,
+                CO_DiscountMoney: CO_DiscountMoney,
+                CO_OrderCode: CO_OrderCode
+            });
+            $("#Money").val(0);
+        });
+    });
+</script>
+<fieldset id="fd-search" style="font-size: 12px;">
+    <legend>查询</legend>
+    <table style="font-size: 12px;">
+        <tr>
+            <td>
+                消费日期：
+            </td>
+            <td>
+                <input id="BeginDate" type="text" class="easyui-datebox" style="width: 100px;" />
+                <input id="BeginTime" type="text" value="00:00:00" style="width: 80px;" />
+            </td>
+            <td align="center">
+                至
+            </td>
+            <td>
+                <input id="EndDate" type="text" class="easyui-datebox" style="width: 100px;" />
+                <input id="EndTime" type="text" value="23:59:59" style="width: 80px;" />
+            </td>
+            <td colspan="2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                卡号/手机：
+            </td>
+            <td>
+                <input id="MemCardIDorMobile" type="text" />
+            </td>
+            <td>
+                按会员等级：
+            </td>
+            <td>@Html.DropDownList("CL_ID", "")
+            </td>
+            <td>
+                消费金额：<select id="ddlOperation">
+                    <option value="0">>=</option>
+                    <option value="1"><=</option>
+                    <option value="2">></option>
+                    <option value="3"><</option>
+                    <option value="4">=</option>
+                </select>
+                <input id="Money" type="text" value="0.00" style="width: 80px;" />
+            </td>
+            <td>
+                <input id="SelectConsumeInfo" type="submit" value="查询" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                订单号：
+            </td>
+            <td colspan="5">
+                <input id="CO_OrderCode" type="text" />
+            </td>
+        </tr>
+    </table>
+</fieldset>
+<div id="dg-container">
+    <table style="font-size: 12px;" id="FastConsumeStatisticInfo">
+    </table>
+</div>

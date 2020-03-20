@@ -1,0 +1,63 @@
+﻿@model MvcPoint.Models.CardLevel
+@{
+    ViewBag.Title = "新增会员卡类别";
+}
+@using (Html.BeginForm())
+{ 
+  <table  style="font-size: 12px;" align="left">
+    <tr>
+        <td>
+            等级名称
+        </td>
+        <td>
+            @Html.EditorFor(model => model.CL_LevelName)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            所需最大积分：
+        </td>
+        <td>
+            @Html.EditorFor(model => model.CL_NeedPoint)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            兑换比例：
+        </td>
+        <td>
+            @Html.EditorFor(model => model.CL_Point)
+        </td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>
+            <b style="color: Red;">
+                (注：消费xx人民币自动兑换成1积分，默认：10RMB=1积分)</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            折扣比例：
+        </td>
+        <td>
+            @Html.EditorFor(model => model.CL_Percent)
+        </td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>
+            <b style="color: Red;">
+                (注：达到此等级时，所享受的折扣率，如：0.87表示八折，1表示不打折)</b>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center">
+            <input id="subAdd" type="submit" value="新增" />
+        </td>
+    </tr>
+</table>  
+}
+

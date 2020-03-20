@@ -1,0 +1,121 @@
+﻿@model MvcPoint.Models.MemCard
+@{
+    ViewBag.Title = "编辑会员";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $(".Search").click(function () {
+            var id = $("#MC_RefererID").val();
+            $.get("/MemCard/GetNamebyId", { MC_CardID: id }, function (data) {
+                $("#MC_RefererName").val(data);
+            });
+        });
+    });
+    function OutFocus() {
+        if ($("#MC_Password").val() != $("#QuePwd").val()) {
+            alert("两次密码输入不一致，请重新输入");
+            $("#Submit").attr("disabled", true);
+        }
+        else {
+            $("#Submit").attr("disabled", false);
+        }
+    }
+</script>
+@using(Html.BeginForm())
+{
+    <fieldset style="font-size: 12px;">
+        <legend>会员基本信息</legend>
+        <table>
+            <tr>
+                <td colspan="2" style="width: 300px;">
+                    会员卡号：@Html.EditorFor(model => model.MC_CardID)
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 300px;">
+                    会员姓名：@Html.EditorFor(model => model.MC_Name)
+                </td>
+                <td>
+                    手机号码：@Html.EditorFor(model => model.MC_Mobile)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    卡片密码：@Html.PasswordFor(model => model.MC_Password)
+                </td>
+                <td>
+                    确认密码：<input id="QuePwd" type="password" onblur="OutFocus();" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    会员性别：@Html.DropDownList("MC_Sex")
+                </td>
+                <td>
+                    会员等级：@Html.DropDownList("CL_ID", "--请选择--")                    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    会员生日：
+                    @Html.RadioButton("MC_BirthdayType", "0", true)公历
+                    @Html.RadioButton("MC_BirthdayType", "1")农历
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.MC_Birthday_Month, new {@size=6 })月
+                    @Html.TextBoxFor(model => model.MC_Birthday_Day, new { @size = 6 })日
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(model=>model.MC_IsPast)设置卡片过期时间(到期则此卡自动失效)
+                </td>
+                <td>
+                    @Html.EditorFor(model=>model.MC_PastTime)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    卡片状态：@Html.DropDownList("MC_State")
+                </td>
+                <td>
+                    卡片付费：@Html.EditorFor(model=>model.MC_Money)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <hr />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    积分数量：@Html.EditorFor(model => model.MC_Point)
+                </td>
+                <td>
+                    @Html.CheckBoxFor(model=>model.MC_IsPointAuto)
+                    积分是否可以自动转换成等级？
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    推&nbsp;&nbsp;荐&nbsp;&nbsp;人：@Html.EditorFor(model => model.MC_RefererID)<a href="#" class="easyui-linkbutton Search">查找</a> 
+                </td>
+                <td align="left">
+                    推荐人姓名：@Html.EditorFor(model => model.MC_RefererName)
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input id="Submit" type="submit" value="修改" />
+                    @Html.HiddenFor(model=>model.MC_ID)
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+}

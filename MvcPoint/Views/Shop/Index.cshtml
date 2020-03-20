@@ -1,0 +1,159 @@
+﻿@model MvcPoint.Models.Shop
+@{
+    ViewBag.Title = "店铺管理";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/ToolKit.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#ShopInfo").datagrid({
+            fit: true,
+            pagination: true,
+            singleSelect: true,
+            fitcolumns: true,
+            url: '/Shop/GetShopPaged',
+            method: 'post',
+            queryParams: {
+                r: Math.random()
+            },
+            columns: [[
+                 { field: 'S_ID', title: '店铺编号', width: 60,
+                     formatter: function (value, row) {
+                         return row.Shop.S_ID;
+                     }
+                 },
+                 { field: 'S_Name', title: '店铺名称', width: 150,
+                     formatter: function (value, row) {
+                         return row.Shop.S_Name;
+                     }
+                 },
+                 { field: 'CI_Name', title: '店铺类型', width: 60,
+                     formatter: function (value, row) {
+                         return row.CategoryItem.CI_Name;
+                     }
+                 },
+                 { field: 'S_ContactName', title: '联系人', width: 80,
+                     formatter: function (value, row) {
+                         return row.Shop.S_ContactName;
+                     }
+                 },
+                 { field: 'S_ContactTel', title: '联系电话', width: 120,
+                     formatter: function (value, row) {
+                         return row.Shop.S_ContactTel;
+                     }
+                 },
+                 { field: 'S_Address', title: '地址', width: 260,
+                     formatter: function (value, row) {
+                         return row.Shop.S_Address;
+                     }
+                 },
+                 { field: 'S_Remark', title: '备注', width: 80,
+                     formatter: function (value, row) {
+                         return row.Shop.S_Remark;
+                     }
+                 },
+                 { field: 'S_IsHasSetAdmin', title: '是否分配管理员', width: 100,
+                     formatter: function (value, row) {
+                         if (row.Shop.S_IsHasSetAdmin) {
+                             return "已分配";
+                         }
+                         else {
+                             return "未分配";
+                         }
+                     }
+                 },
+                 { field: 'S_CreateTime', title: '加盟时间', width: 120,
+                     formatter: function (value, row) {
+                         return FormatJsonDate(row.Shop.S_CreateTime);
+                     }
+                 }
+            ]],
+            toolbar: "#tb"
+        });
+        $(".Delete").click(function () {
+            var row = $("#ShopInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            Delete(row.Shop.S_ID);
+        });
+        $(".Update").click(function () {
+            var row = $("#ShopInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            $("#dlg").dialog({ width: 400, height: 300 }).dialog("setTitle", "修改店铺信息").dialog("open");
+            $("#frm").attr("src", "/Shop/Edit/" + row.Shop.S_ID + "?r=" + Math.random())
+        });
+        $(".Insert").click(function () {
+            $("#dlg").dialog({ width: 400, height: 300 }).dialog("setTitle", "新增店铺").dialog("open");
+            $("#frm").attr("src", "/Shop/Create");
+        });
+        $(".Search").click(function () {
+            $("#ShopInfo").datagrid("load", {
+                S_Name: $("#txtName").val(),
+                S_ContactName: $("#txtContactName").val(),
+                S_Address: $("#txtAddress").val()
+            });
+        });
+        $(".AllotAdmin").click(function () {
+            var row = $("#ShopInfo").datagrid("getSelected");
+            if (row == null) {
+                $.messager.alert('温馨提示', '请选中需要操作的行!', 'warning');
+                return;
+            }
+            else {
+                if (row.Shop.S_IsHasSetAdmin) {
+                    $.messager.alert('温馨提示', '对不起，该选中店铺已分配管理员！', 'warning');
+                }
+                else {
+                    $("#dlg").dialog({ width: 250, height: 200 }).dialog("setTitle", "分配管理员").dialog("open");
+                    $("#frm").attr("src", "/Shop/AllotAdmin/" + row.Shop.S_ID + "?r=" + Math.random());
+                }
+            }
+        });
+    });
+    function Delete(S_ID) {
+        $.messager.confirm('温馨提示', '您确定要删除选中的信息吗？', function (r) {
+            if (r) {
+                $.get("/Shop/Delete", { id: S_ID }, function (data) {
+                    if (data == "1") {
+                        $.messager.alert('温馨提示', '删除成功！', 'info');
+                        location = location;
+                    }
+                    else {
+                        $.messager.alert('温馨提示', '删除失败,当前店铺正在使用中……', 'warning');
+                    }
+                });
+            }
+        });
+    }
+</script>
+<table id="ShopInfo">
+</table>
+<div id="tb" style="padding: 5px; height: auto">
+    <div style="margin-bottom: 5px">
+        <a href="#" class="easyui-linkbutton Insert" iconcls="icon-add">新增</a> <a href="#"
+            class="easyui-linkbutton Update" iconcls="icon-edit">修改</a> <a href="#" class="easyui-linkbutton Delete"
+                iconcls="icon-remove">删除</a> <a href="#" class="easyui-linkbutton AllotAdmin" iconcls="icon-ok">
+                    分配管理员</a>
+    </div>
+    <div>
+        店铺名称:
+        <input id="txtName" style="width: 80px;">
+        联系人:
+        <input id="txtContactName" style="width: 80px;">
+        店铺地址:
+        <input id="txtAddress" style="width: 80px;">
+        <a href="#" class="easyui-linkbutton Search" iconcls="icon-search">查询</a>
+    </div>
+</div>
+<div id="dlg" class="easyui-dialog" data-options="modal:true,closed:true">
+    <iframe id="frm" width="99%" height="98%" frameborder="0" scrolling="no"></iframe>
+</div>

@@ -1,0 +1,65 @@
+﻿@model MvcPoint.Models.ExchangGift
+@{
+    ViewBag.Title = "新增礼品";
+}
+@using(Html.BeginForm())
+{
+     <table style="font-size: 12px;" align="center">
+        <tr>
+            <td>
+                礼品代号：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.EG_GiftCode)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                礼品名称：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.EG_GiftName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                礼品图片：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.EG_Photo)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                所需积分：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.EG_Point)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                礼品数量：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.EG_Number)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                备注：
+            </td>
+            <td>
+                @Html.EditorFor(model=>model.EG_Remark)
+            </td>
+        </tr>
+        <tr>
+            <td>
+            
+            </td>
+            <td>
+                <input id="Submit1" type="submit" value="新增" />
+            </td>
+        </tr>
+    </table>
+}

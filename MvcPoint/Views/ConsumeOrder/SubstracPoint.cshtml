@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "会员减积分";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSearch").click(function () {
+            $.getJSON("/MemCard/GetMemCardByM_CardIDOrM_Mobile",
+            {
+                CardIDOrMobile: $("#CardOrMobile").val(),
+                r: Math.random()
+            }, function (data) {
+                $("#MC_Name").text(data.MemCard.MC_Name);
+                $("#MC_ID").val(data.MemCard.MC_ID);
+                $("#MC_CardID").val(data.MemCard.MC_CardID);
+                $("#CL_LevelName").text(data.CardLevel.CL_LevelName + "(折扣比例：" + data.CardLevel.CL_Percent + ")");
+                $("#MC_Point").text(data.MemCard.MC_Point);
+                $("#MC_TotalMoney").text(data.MemCard.MC_TotalMoney);
+            });
+        });
+        $("#Submit").click(function () {
+            if ($("#CO_GavePoint").val() == "" || $("#CardOrMobile").val() == "") {
+                $.messager.alert("提示", "请输入会员卡号/手机号或减积分", "warning");
+                return false;
+            }
+            else {
+                var SubstracPoint = {
+                    MC_ID: $("#MC_ID").val(),
+                    MC_CardID: $("#MC_CardID").val(),
+                    CO_GavePoint: $("#CO_GavePoint").val(),
+                    CO_Remark: $("#CO_Remark").val()
+                };
+                $("#SubstracPoint").val(JSON.stringify(SubstracPoint));
+            }
+        });
+    });
+</script>
+@using (Html.BeginForm())
+{
+    <fieldset style="font-size: 12px;">
+        <legend>查找会员</legend>
+        <table align="left" style="font-size: 12px;">
+            <tr>
+                <td>
+                    卡号/手机：<input id="CardOrMobile" type="text" />
+                    <input id="btnSearch" type="button" value="查找" />
+                </td>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    姓名：<span id="MC_Name"></span>
+                </td>
+                <td>
+                    等级：<span id="CL_LevelName"></span>
+                    <input id="MC_ID" type="hidden" />
+                    <input id="MC_CardID" type="hidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    当期积分：<span id="MC_Point" style="color: Red;"></span>
+                </td>
+                <td>
+                    累计消费：￥<span id="MC_TotalMoney"></span>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <fieldset>
+        <legend>减积分信息</legend>
+        <table>
+            <tr>
+                <td>
+                    扣除积分：
+                </td>
+                <td>
+                    <input id="CO_GavePoint" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    备注：
+                </td>
+                <td>
+                    <input id="CO_Remark" type="text" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <table style="font: 12px;">
+        <tr>
+            <td>
+                <input id="Submit" type="submit" value="马上扣除" />
+                <input id="SubstracPoint" name="SubstracPoint" type="hidden" />
+            </td>
+        </tr>
+    </table>
+}

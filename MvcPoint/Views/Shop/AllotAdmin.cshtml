@@ -1,0 +1,30 @@
+﻿@model MvcPoint.Models.User
+@{
+    ViewBag.Title = "分配管理员";
+}
+@using (Html.BeginForm())
+{
+    <table align="center" style=" font:12px;">
+        <tr>
+            <td>
+                用户名：
+            </td>
+            <td>
+                @Html.EditorFor(model => model.U_LoginName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input id="Submit1" type="submit" value="分配店长的账号" />
+                <input id="S_ID" name="S_ID" type="hidden" value="@ViewBag.S_ID" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style=" color:Red;">
+                账号的默认密码为：123456
+            </td>
+        </tr>
+    </table>
+}

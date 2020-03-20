@@ -1,0 +1,99 @@
+﻿@model IEnumerable<MvcPoint.Models.MemCard>
+@{
+    ViewBag.Title = "GiftExchangCount";
+}
+<link href="../../Content/easyui/default/easyui.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/easyui/icon.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/easyui/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/jquery-easyui-min.js" type="text/javascript"></script>
+<script src="../../Scripts/easyui/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/ToolKit.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#dg-container").height($(document).height() - $("#fd-search").outerHeight() - 25);
+        $("#dg").datagrid({
+            striped: true,
+            fit: true,
+            pagination: true,
+            singleSelect: true,
+            rownumbers: true,
+            fitcolumns: true,
+            url: '/ExchangLog/P_GetPagedMemCardAndGift',
+            method: 'post',
+            queryParams: {
+                r: Math.random()
+            },
+            columns: [[
+                { field: 'MC_CardID', title: '会员卡号', width: 80,
+                    formatter: function (value, row, index) {
+                        return row.MemCard.MC_CardID
+                    }
+                },
+                { field: 'MC_Name', title: '会员名称', width: 80,
+                    formatter: function (value, row, index) {
+                        return row.MemCard.MC_Name
+                    }
+                },
+                { field: 'EG_ID', title: '礼品编号', width: 80,
+                    formatter: function (value, row, index) {
+                        return row.ExchangLog.EG_ID
+                    }
+                },
+                { field: 'EG_GiftName', title: '礼品名称', width: 80,
+                    formatter: function (value, row, index) {
+                        return row.ExchangLog.EG_GiftName
+                    }
+                },
+                { field: 'EL_Point', title: '所需积分', width: 80,
+                    formatter: function (value, row, index) {
+                        return row.ExchangLog.EL_Point
+                    }
+                },
+                { field: 'EL_Number', title: '数量', width: 80,
+                    formatter: function (value, row, index) {
+                        return row.ExchangLog.EL_Number
+                    }
+                },
+                { field: 'EL_CreateTime', title: '兑换时间', width: 80,
+                    formatter: function (value, row, index) {
+                        return FormatJsonDate(row.ExchangLog.EL_CreateTime)
+                    }
+                }
+            ]],
+            toolbar: "#tb"
+
+        });
+    })
+    //条件查询
+    function SelectByCondition() {
+        $("#dg").datagrid("reload", {
+            MC_IDOrName: $("#txtIDOrName").val(),
+            BeginTime: $("#BeginTime").datebox("getValue"),
+            EndTime: $("#EndTime").datebox("getValue")
+        });
+    }
+</script>
+@using (Html.BeginForm())
+{ 
+    <fieldset  id="fd-search" >
+        <legend>查询</legend>
+        <table>
+            <tr>
+                <td>
+                    卡号/手机：<input id="txtIDOrName" type="text" />
+                </td>
+                <td>
+                    兑换日期：<input id="BeginTime" type="text" class="easyui-datebox" />至<input id="EndTime"
+                        type="text" class="easyui-datebox" />
+                </td>
+                <td>
+                    <input id="btnSelect" type="button" value="查询" onclick="SelectByCondition()" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+}
+<div id="dg-container">
+    <table id="dg">
+    </table>
+</div>
